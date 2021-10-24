@@ -6,22 +6,16 @@ export default class App extends Component {
   render() {
     return(
       <View style={ styles.container }>
-          <Image style={ styles.logo } source={ require('../assets/logo.jpg') } />
-
-          <TextInput style={ styles.input } placeholder="Digite seu email"/>
-          <TextInput style={ styles.input } placeholder="Digite sua senha" secureTextEntry={true}/>
+          
+          <TextInput style={ styles.input } placeholder="Nome"/>
+          <TextInput style={ styles.input } placeholder="Email" secureTextEntry={true}/>
+          <TextInput style={ styles.input } placeholder="Telefone" secureTextEntry={true}/>
 
           <TouchableOpacity 
-            style={ styles.botaoLogin } 
+            style={ styles.botaoSalvar } 
             onPress={ () => { this.cliclou() }}>
             
-            <Text style={ styles.botaoText }>Login</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={ styles.botaoCadastro } 
-            onPress={ () => { this.cliclou() }}>
-            
-            <Text style={ styles.botaoText }>Cadastre-se</Text>
+            <Text style={ styles.botaoText }>Salvar</Text>
           </TouchableOpacity>
       </View>
       )
@@ -49,19 +43,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     borderRadius: 3
   },
-  botaoLogin:{
+  botaoSalvar:{
     width: 300,
     height: 42,
     backgroundColor: '#3498db',
-    marginTop: 10,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  botaoCadastro:{
-    width: 300,
-    height: 42,
-    backgroundColor: '#FF0000',
     marginTop: 10,
     borderRadius: 4,
     alignItems: 'center',
