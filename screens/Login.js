@@ -4,26 +4,88 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import { initializeApp } from "firebase/app";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 
 
 function HomeScreen({ navigation }) {
+  const [email, setEmail] = React.useState("");
+  const [senha, setSenha] = React.useState("");
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBxCvAiFB3eJLh4cFIlBdiCR6KUeW2_qnI",  
+    authDomain: "integracao-firebase-73f28.firebaseapp.com",  
+    projectId: "integracao-firebase-73f28",
+    storageBucket: "integracao-firebase-73f28.appspot.com",  
+    messagingSenderId: "703468964500",  
+    appId: "1:703468964500:web:2899c741a93bdc32b48281",  
+    measurementId: "G-X2X1EY3QSV"  
+  };
+  
+  const app = initializeApp(firebaseConfig);
+
+  function loginFirebase(){
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, senha)
+    .then((userCredential) => {
+      // Signed in
+      console.log("conectado");
+      const user = userCredential.user;
+      navigation.navigate("ListaContato");
+      // ...
+    })
+    .catch((error) => {
+      console.log("não conectado");
+      const errorCode = error.code;
+      const errorMessage = error.message;
+    });
+  }
+
     return (
         <View  style={ styles.container }>
             <Image style={styles.logo} source={require('../src/assets/logo.jpg')} />
 
-            <TextInput style={styles.input} placeholder="Digite seu email" />
-            <TextInput style={styles.input} placeholder="Digite sua senha" secureTextEntry={true} />
+            <TextInput 
+              placeholder="Digite seu email"              
+              leftIcon={
+                <Icon
+                  name='at'
+                  size={24}      
+                  color='black'    
+                  />
+                }
+                value={email}
+                onChangeText={email => setEmail(email)}
+              style={styles.input}
+            />
+            <TextInput 
+              placeholder="Digite sua senha" 
+              leftIcon={
+                <Icon
+                  name='unlock-alt'
+                  size={24}      
+                  color='black'    
+                  />
+                }
+                value={senha}
+                onChangeText={senha => setSenha(senha)}
+              style={styles.input} 
+              secureTextEntry={true} 
+            />
 
             <TouchableOpacity
                 style={styles.botaoLogin}
-                onPress={() => { navigation.navigate("ListaContato") }}>
+                // onPress={() => { navigation.navigate("ListaContato") }}
+                onPress={()=>loginFirebase()}
+            >
 
                 <Text style={styles.botaoText}>Login</Text>
             </TouchableOpacity>
             <TouchableOpacity
                 style={styles.botaoCadastro}
-                onPress={() => navigation.navigate("CadastroUsuario")}>
+                onPress={() => navigation.navigate("CadastroUsuario")}
+                //onPress={()=>cadastroUsuarioFirebase()}
+            >
 
                 <Text style={styles.botaoText}>Cadastre-se</Text>
             </TouchableOpacity>
