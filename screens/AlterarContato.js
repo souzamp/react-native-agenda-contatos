@@ -1,25 +1,69 @@
 import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import {StyleSheet, TextInput, Text ,View, Image, TouchableOpacity, Alert} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import axios from 'axios';
+import ListaContatoScreen from './ListaContato';
 
-function AlterarContatoScreen() {
+function AlterarContatoScreen({route, navigation}) {
+  const Stack = createNativeStackNavigator();
+  const {id, nome, email, telefone} = route.params;
+
+  const [contatoId,setContatoId]= useState(id);
+  const [contatoNome,setContatoNome]= useState(nome);
+  const [contatoEmail,setContatoEmail]= useState(email);
+  const [contatoTelefone,setContatoTelefone]= useState(telefone);
+
+  function alert (text) {
+    Alert.alert(
+      text,
+      "",
+      [ { text: "OK", onPress: () => navigation.navigate('ListaContato')} ]
+    );
+  }
+
+  function editarContato(id){
+    axios.put(`http://professornilson.com/testeservico/clientes/${id}`,{
+        nome:contatoNome,
+        email:contatoEmail,
+        telefone:contatoTelefone
+    }).then(function(response){
+      alert ("Seu contato foi salvo");
+        console.log(response);
+    }).catch(function(error){
+      alert ("Ocorreu um erro, favor tentar novamente");
+        console.log(error);
+    })
+  }
+
+  function deletaContato(id){
+    axios.delete(`http://professornilson.com/testeservico/clientes/${id}`)
+    .then(function(response){
+      alert ("Seu contato foi excluído");
+      console.log(response);
+  }).catch(function(error){
+    alert ("Ocorreu um erro, favor tentar novamente");
+      console.log(error);
+  })
+}
+
   return (
     <View style={ styles.container }>
-          
-          <TextInput style={ styles.input } placeholder="Nome"/>
-          <TextInput style={ styles.input } placeholder="Email" secureTextEntry={true}/>
-          <TextInput style={ styles.input } placeholder="Telefone" secureTextEntry={true}/>
+      <Stack.Screen name="ListaContato" component={ListaContatoScreen} />
+          <TextInput style={ styles.input } placeholder="Nome" value={contatoNome} onChangeText={contatoNome => setContatoNome(contatoNome)}/>
+          <TextInput style={ styles.input } placeholder="Email" value={contatoEmail} onChangeText={contatoEmail => setContatoEmail(contatoEmail)}/>
+          <TextInput style={ styles.input } placeholder="Telefone" value={contatoTelefone} onChangeText={contatoTelefone => setContatoTelefone(contatoTelefone)}/>
 
           <TouchableOpacity 
             style={ styles.botaoSalvar } 
-            onPress={ () => { this.cliclou() }}>
+            onPress={() => editarContato(contatoId)}>
             
             <Text style={ styles.botaoText }>Salvar</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={ styles.botaoExcluir } 
-            onPress={ () => { this.cliclou() }}>
+            onPress={() =>deletaContato(contatoId)}>
             
             <Text style={ styles.botaoText }>Excluir</Text>
           </TouchableOpacity>

@@ -1,106 +1,74 @@
-import React, { Component } from 'react';
-import { Text, StyleSheet, View, FlatList, TextInput, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, StyleSheet, View, ScrollView, FlatList, TextInput, Image, TouchableOpacity, Alert } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Button } from 'react-native-elements';
+import { Button, ListItem, Avatar, Badge } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import CadastroContato from './CadastroContato';
+import axios from 'axios';
 
+export default function ListaContatoScreen({ navigation }){
+  const [dados, setDados] = useState([]);
 
-type Props = {};
-export default class ListaContatoScreen extends Component<Props> {
-  constructor(props) {
-    super(props)
-    this.state = {
-      Text: "",
-      itens: [
-        {
-          key: "0",
-          desc: "Marcos Andrade",
-          contato: "8199359-2842",
-          done: false
-        },
-        {
-          key: "1",
-          desc: "Patrícia Tavares",
-          contato: "8199359-2842",
-          done: false
-        }]
-    }
-    this.inserirItem = this.inserirItem.bind(this);
-    this.adicionar = this.adicionar.bind(this);
+  useEffect(()=>{
+    function getData(){
+      axios.get('http://professornilson.com/testeservico/clientes')
+        .then(function (response) {
+          setDados(response.data);
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+        .then(function () {
+        });
+      }
+    getData();
+  },[])
+
+  function openContato(l){
+    navigation.navigate('AlterarContato',
+                        {id: l.id, 
+                        nome:l.nome, 
+                        email:l.email, 
+                        telefone:l.telefone})
   }
 
-  renderItem(obj) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.cardView}>
-          <View style={styles.descriptionText}>
-            <Text style={styles.cell}>{obj.item.desc}</Text>
-            <Text style={styles.cell}>{obj.item.contato}</Text>
-          </View>
-        </View>
-      </View>
-    )
-  }
+  return(
+    <View>
+      <ScrollView>
+        {    dados.map((l, i) => (      
+        <ListItem key={i} bottomDivider onPress={()=>openContato(l)}>
+            <Avatar source={{uri: 'https://i2.wp.com/www.cssscript.com/wp-content/uploads/2020/12/Customizable-SVG-Avatar-Generator-In-JavaScript-Avataaars.js.png?fit=438%2C408&ssl=1'}} />
+            <ListItem.Content>
+              <ListItem.Title>{l.nome}</ListItem.Title>
+              <ListItem.Subtitle>{l.email}</ListItem.Subtitle>
+              <ListItem.Subtitle>{l.telefone}</ListItem.Subtitle>
+            </ListItem.Content>
+        </ListItem>
+        ))  }
+      </ScrollView>
+      <Button
+        onPress={() => navigation.navigate("CadastroContato")}
+        icon={    
+          <Icon      
+            name="user-plus"      
+            size={35}      
+            color="white"    
+          /> 
+        }
+      />
+    </View>
+  )
+}
 
-  inserirItem() {
-    let newItem = {
-      key: this.state.itens.length.toString(),
-      desc: this.state.text,
-      contato: this.state.text,
-      imageUri: this.state.text,
-      done: false
-    }
-    let itens = this.state.itens;
-    itens.push(newItem),
-      this.setState({ itens })
-
-    let text = ""
-    this.setState({ text })
-  }
-
-  adicionar() {
-    const navigation = useNavigation();
-    navigation.navigate("CadastroContato");
-  }
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <View style={styles.container}>
-          <FlatList 
-            style={styles.lista} 
-            data={this.state.itens} 
-            renderItem={this.renderItem} 
-            extraData={this.state}/>
-            
-          <View style={styles.container}>
-            {/* <TextInput style={styles.input} onChange={(text) => { this.setState({ text }) }} value={this.state.Text} /> */}
-            {/* <Button onPress={this.inserirItem} title="Inserir" /> */}
-            <TouchableOpacity
-              style={styles.botaoLogin}
-              onPress={ () => { this.adicionar() }}>
-
-              <Text style={styles.botaoText}>Inserir</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    );
-  }
-};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: 'center',
-    width: 300,
-    height: 42,
-    backgroundColor: '#2c3e50',
-    marginTop: 10,
-    borderRadius: 4
+      justifyContent: "center",
+      alignItems: 'center',
+      backgroundColor:'#2c3e50'
   },
   listacontato: {
     width: 300,

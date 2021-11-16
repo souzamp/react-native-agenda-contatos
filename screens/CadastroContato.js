@@ -1,22 +1,75 @@
 import React, { Component } from 'react';
 import {StyleSheet, TextInput, Text ,View, Image, TouchableOpacity, Alert} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import axios from 'axios';
+
+import ListaContatoScreen from './ListaContato';
 
 export default class App extends Component {
-  cliclou = () =>{Alert.alert("IFPE", "Clicou")}
+  constructor(props) {
+    super(props);
+    this.state = {
+      nome: "",
+      email: "",
+      telefone:""
+    };
+  }
+
+  alert(text){
+    Alert.alert(
+      text,
+      "",
+      [ { text: "OK", onPress: () => navigation.navigate('ListaContato') } ]
+    )
+  }
+
+  inserirtContato() {
+    axios.post('http://professornilson.com/testeservico/clientes', {
+      nome: this.state.nome,
+      email: this.state.email,
+      telefone: this.state.telefone,
+      cpf: ""
+    })
+    .then(function (response) {
+      alert("Contato salvo com sucesso!");
+      console.log(response);
+    })
+    .catch(function (error) {
+      alert("Ocorreu um erro, favor tentar novamente");
+      console.log(error);
+    });
+  }
+
   render() {
+    const Stack = createNativeStackNavigator();
     return(
       <View style={ styles.container }>
-          
-          <TextInput style={ styles.input } placeholder="Nome"/>
-          <TextInput style={ styles.input } placeholder="Email" secureTextEntry={true}/>
-          <TextInput style={ styles.input } placeholder="Telefone" secureTextEntry={true}/>
+        <Stack.Screen name="ListaContato" component={ListaContatoScreen} />      
+          <TextInput 
+            style={ styles.input } 
+            placeholder="Nome"
+            value={this.nome}
+            onChangeText={nome => this.state.nome}
+          />
+          <TextInput 
+            style={ styles.input } 
+            placeholder="Email"
+            value={this.email}
+            onChangeText={email => this.state.email}
+          />
+          <TextInput 
+            style={ styles.input } 
+            placeholder="Telefone" 
+            value={this.telefone}
+            onChangeText={telefone => this.state.telefone}
+          />
 
           <TouchableOpacity 
             style={ styles.botaoSalvar } 
-            onPress={ () => { this.cliclou() }}>
-            
+            onPress={ () => { this.inserirtContato() }}
+          >            
             <Text style={ styles.botaoText }>Salvar</Text>
           </TouchableOpacity>
       </View>
